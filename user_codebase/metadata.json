@@ -1,0 +1,20 @@
+[
+  {
+    "file": "sample.py",
+    "function": "calculate_total",
+    "line": 1,
+    "type": "function"
+  },
+  {
+    "file": "sample.py",
+    "function": "process_order",
+    "line": 5,
+    "type": "function"
+  },
+  {
+    "file": "user_code.py",
+    "function": "find_common_elements",
+    "line": 1,
+    "type": "function"
+  }
+]

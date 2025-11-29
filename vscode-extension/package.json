@@ -1,0 +1,104 @@
+{
+  "name": "ai-code-assistant",
+  "displayName": "AI Code Assistant - Hybrid Model",
+  "description": "Two-stage hybrid AI assistant (Fine-tuned CodeT5 + Gemini) for code explanation, documentation, bug fixing, and optimization",
+  "version": "1.0.0",
+  "publisher": "M-Ahtisham",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "Other"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiCodeAssistant.explain",
+        "title": "AI Assistant: Explain Code"
+      },
+      {
+        "command": "aiCodeAssistant.document",
+        "title": "AI Assistant: Generate Documentation"
+      },
+      {
+        "command": "aiCodeAssistant.fixBug",
+        "title": "AI Assistant: Fix Bugs"
+      },
+      {
+        "command": "aiCodeAssistant.optimize",
+        "title": "AI Assistant: Optimize Code"
+      },
+      {
+        "command": "aiCodeAssistant.generateTests",
+        "title": "AI Assistant: Generate Tests"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "aiCodeAssistant.submenu",
+          "group": "navigation"
+        }
+      ],
+      "aiCodeAssistant.submenu": [
+        {
+          "command": "aiCodeAssistant.explain",
+          "group": "1_analysis"
+        },
+        {
+          "command": "aiCodeAssistant.document",
+          "group": "1_analysis"
+        },
+        {
+          "command": "aiCodeAssistant.fixBug",
+          "group": "2_modify"
+        },
+        {
+          "command": "aiCodeAssistant.optimize",
+          "group": "2_modify"
+        },
+        {
+          "command": "aiCodeAssistant.generateTests",
+          "group": "3_testing"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "aiCodeAssistant.submenu",
+        "label": "🤖 AI Code Assistant"
+      }
+    ],
+    "configuration": {
+      "title": "AI Code Assistant",
+      "properties": {
+        "aiCodeAssistant.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:5000",
+          "description": "URL of the AI Code Assistant backend server"
+        },
+        "aiCodeAssistant.showInNewEditor": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show results in a new editor tab instead of replacing selection"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "16.x",
+    "eslint": "^8.41.0"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}

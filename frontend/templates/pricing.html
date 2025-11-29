@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - AI Code Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .pricing-card.featured {
+            border: 3px solid #667eea;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .plan-price {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .plan-price span {
+            font-size: 0.4em;
+            color: #666;
+        }
+
+        .plan-description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .features-list li {
+            padding: 12px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .features-list li.disabled {
+            color: #ccc;
+        }
+
+        .features-list li.disabled::before {
+            content: "✗";
+            color: #ef4444;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .cta-button.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .comparison-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .comparison-section h2 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table th {
+            background: #f9fafb;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .check-icon {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .cross-icon {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">← Back to App</a>
+        
+        <div class="header">
+            <h1>🚀 Choose Your Plan</h1>
+            <p>Start free, upgrade as you grow</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0<span>/month</span></div>
+                <div class="plan-description">Perfect for trying out AI code assistance</div>
+                
+                <ul class="features-list">
+                    <li>10 AI operations per day</li>
+                    <li>All 5 core features</li>
+                    <li>Basic code analysis</li>
+                    <li>Community support</li>
+                    <li class="disabled">Priority processing</li>
+                    <li class="disabled">Advanced optimizations</li>
+                    <li class="disabled">Team collaboration</li>
+                </ul>
+                
+                <button class="cta-button secondary" onclick="alert('Already using Free plan!')">Current Plan</button>
+            </div>
+
+            <!-- Pro Plan (Featured) -->
+            <div class="pricing-card featured">
+                <div class="popular-badge">MOST POPULAR</div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">$9.99<span>/month</span></div>
+                <div class="plan-description">For professional developers who code daily</div>
+                
+                <ul class="features-list">
+                    <li>Unlimited AI operations</li>
+                    <li>All 5 core features</li>
+                    <li>Advanced code analysis</li>
+                    <li>Priority processing (2x faster)</li>
+                    <li>Code optimization insights</li>
+                    <li>Email support (24h response)</li>
+                    <li>Save favorite snippets</li>
+                    <li class="disabled">Team features</li>
+                </ul>
+                
+                <button class="cta-button primary" onclick="alert('Pro plan coming soon! Join waitlist at pricing@aicodeassist.com')">Upgrade to Pro</button>
+            </div>
+
+            <!-- Team Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Team</div>
+                <div class="plan-price">$29<span>/user/month</span></div>
+                <div class="plan-description">Built for engineering teams</div>
+                
+                <ul class="features-list">
+                    <li>Everything in Pro</li>
+                    <li>Shared codebase context</li>
+                    <li>Team analytics dashboard</li>
+                    <li>Codebase-specific training</li>
+                    <li>5 team members minimum</li>
+                    <li>Dedicated support</li>
+                    <li>Custom integrations</li>
+                    <li>SSO & security features</li>
+                </ul>
+                
+                <button class="cta-button secondary" onclick="alert('Contact sales@aicodeassist.com for Team plan')">Contact Sales</button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">Custom</div>
+                <div class="plan-description">For large organizations with specific needs</div>
+                
+                <ul class="features-list">
+                    <li>Everything in Team</li>
+                    <li>Private model deployment</li>
+                    <li>On-premise hosting option</li>
+                    <li>Custom model fine-tuning</li>
+                    <li>Unlimited team members</li>
+                    <li>SLA guarantees</li>
+                    <li>Dedicated account manager</li>
+                    <li>CI/CD integration support</li>
+                </ul>
+                
+                <button class="cta-button secondary" onclick="alert('Contact enterprise@aicodeassist.com for custom pricing')">Contact Us</button>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="comparison-section">
+            <h2>📊 Feature Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Free</th>
+                        <th>Pro</th>
+                        <th>Team</th>
+                        <th>Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Daily AI Operations</td>
+                        <td>10</td>
+                        <td>Unlimited</td>
+                        <td>Unlimited</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Code Explanation</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Documentation Generation</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bug Detection & Fix</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Code Optimization</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Test Generation</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Priority Processing</td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Codebase Context Retrieval</td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Team Analytics</td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Private Deployment</td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Custom Model Training</td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="cross-icon">✗</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Support</td>
+                        <td>Community</td>
+                        <td>Email (24h)</td>
+                        <td>Priority</td>
+                        <td>Dedicated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; color: white;">
+            <h3 style="margin-bottom: 15px;">Questions about pricing?</h3>
+            <p style="font-size: 1.1em; opacity: 0.9;">Contact us at <strong>pricing@aicodeassist.com</strong></p>
+        </div>
+    </div>
+</body>
+</html>
