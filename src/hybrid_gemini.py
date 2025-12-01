@@ -183,7 +183,7 @@ class HybridGeminiAssistant:
         """
         # Step 1: Get basic explanation from fine-tuned model
         print("🤖 Step 1: Getting basic explanation from fine-tuned model...")
-        basic_explanation = self._generate_finetuned(code, "explain", max_length=256)
+        basic_explanation = self._generate_finetuned(code, "explain", max_length=512)
         
         if self.use_gemini:
             # Step 2: Enhance with Gemini
@@ -223,107 +223,114 @@ Enhanced Explanation:"""
     
     def generate_documentation(self, code: str, style: str = "google") -> str:
         """
-        Generate documentation - First use fine-tuned model, then enhance with Gemini
-        Returns comprehensive documentation with both basic and enhanced versions
+        Generate documentation - Hybrid approach using fine-tuned model + Gemini
+        Returns professional documentation with Args, Returns, and proper structure
         """
         # Step 1: Get basic documentation from fine-tuned model
         print("🤖 Step 1: Generating basic documentation from fine-tuned model...")
-        basic_docs = self._generate_finetuned(code, "document", max_length=256)
+        basic_docs = self._generate_finetuned(code, "document", max_length=1024)
         
         if self.use_gemini:
-            # Step 2: Enhance with Gemini
-            print("✨ Step 2: Enhancing documentation with Gemini AI...")
+            # Step 2: Enhance with Gemini for professional format
+            print("✨ Step 2: Formatting professional documentation with Gemini AI...")
             
-            prompt = f"""You are enhancing code documentation. Here's what we have:
+            prompt = f"""Generate a professional Google-style docstring for this code.
 
 Code:
 ```python
 {code}
 ```
 
-Basic Documentation (from fine-tuned model):
+Basic analysis from fine-tuned model:
 {basic_docs}
 
-Your task: Create a professional, comprehensive Google-style docstring that MUST include:
-1. Brief one-line description of what the function does
-2. Detailed explanation of the functionality
-3. Args section listing ALL parameters with their types and descriptions
-4. Returns section describing the return value and its type
-5. Any edge cases or important details
+IMPORTANT REQUIREMENTS:
+- ONE-LINE summary (concise, no fluff)
+- Brief description (2-3 sentences max)
+- Args section with parameter types and descriptions
+- Returns section with return type and description
+- NO code examples
+- NO lengthy explanations
+- Professional, concise format
 
-Return ONLY the docstring in this EXACT format:
+Format EXACTLY as:
 
 \"\"\"
-Brief one-line description of what the function does.
+One-line summary of function purpose.
 
-Detailed explanation of the functionality, how it works, and what it accomplishes.
+Brief 2-3 sentence description of what it does and how.
 
 Args:
-    param_name (type): Clear description of what this parameter is and how it's used
-    another_param (type): Description
+    param_name (type): Concise description
+    another_param (type): Concise description
 
 Returns:
-    type: Description of what is returned and what it represents
+    type: What is returned
 
 Raises:
-    ExceptionType: When this exception occurs (if applicable)
+    ExceptionType: When raised (only if applicable)
 \"\"\"
 
-Enhanced docstring:"""
+Docstring:"""
             
             enhanced = self._generate_gemini(prompt)
             
-            # Clean up if Gemini adds extra stuff
+            # Clean up the response
             if '"""' in enhanced:
-                # Extract just the docstring
                 parts = enhanced.split('"""')
                 if len(parts) >= 3:
                     enhanced = '"""' + parts[1] + '"""'
+                elif len(parts) == 2:
+                    enhanced = '"""' + parts[1].strip()
             
-            return f"""📚 Documentation
+            return f"""📚 Professional Documentation
 
-📝 Basic Documentation :
+🤖 Fine-tuned Model Analysis:
 {basic_docs}
 
-✨ Enhanced Documentation :
+✨ Enhanced:
 {enhanced}"""
         else:
             # Only fine-tuned model available
             return f"📚 Documentation\n\n{basic_docs}"
     
     def fix_bug(self, code: str, error_msg: str = None) -> Dict[str, str]:
-        """Fix bugs in code"""
+        """Fix bugs using hybrid approach - fine-tuned model analysis + Gemini correction"""
+        # Step 1: Analyze with fine-tuned model
+        print("🤖 Step 1: Analyzing code with fine-tuned model...")
+        finetuned_analysis = self._generate_finetuned(code, "fix_bug", max_length=512)
+        
         if self.use_gemini:
-            print("✨ Using Gemini for bug fixing...")
-
+            # Step 2: Use Gemini to fix based on fine-tuned analysis
+            print("✨ Step 2: Generating fix with Gemini AI...")
             error_context = f"\n\nError message: {error_msg}" if error_msg else ""
             
-            prompt = f"""Fix the bugs in this Python code. Pay special attention to logical errors like unreachable conditions.{error_context}
+            prompt = f"""Fix bugs in this Python code using the initial analysis provided.
 
 Buggy Code:
 ```python
 {code}
 ```
 
-Provide your response in this EXACT format with PROFESSIONAL HEADINGS:
+Initial Analysis (from fine-tuned CodeT5 model):
+{finetuned_analysis}{error_context}
+
+Provide your response in this EXACT format:
 
 FIXED_CODE:
 ```python
-[corrected code here - properly indented]
+[corrected code - properly indented]
 ```
 
 EXPLANATION:
-Write a professional explanation using proper section headings (not bullet points or informal lists).
-
-Use this structure:
 ## Bug Analysis
-[Describe what was wrong]
+[What was wrong with the code]
 
 ## Solution Implemented
-[Describe the fix applied]
+[How the fix addresses the issue]
 
 ## Key Improvements
-[List specific improvements in paragraph form]
+[Specific improvements made]
 
 Response:"""
             
@@ -345,11 +352,11 @@ Response:"""
                 
                 return {
                     "fixed_code": fixed_code,
-                    "explanation": explanation,
-                    "method": f"Google Gemini ({self.gemini_model})"
+                    "explanation": f"🤖 Fine-tuned Model Analysis:\n{finetuned_analysis}\n\n✨ Gemini Fix:\n{explanation}",
+                    "method": f"Hybrid (CodeT5 + Gemini {self.gemini_model})"
                 }
             else:
-                # Try to extract code
+                # Fallback parsing
                 if "```python" in result:
                     fixed_code = result.split("```python")[1].split("```")[0].strip()
                 elif "```" in result:
@@ -360,29 +367,37 @@ Response:"""
                 
                 return {
                     "fixed_code": fixed_code,
-                    "explanation": "Code analyzed and corrected",
-                    "method": f"Google Gemini ({self.gemini_model})"
+                    "explanation": f"🤖 Analysis: {finetuned_analysis}\n\n✨ Fix applied",
+                    "method": f"Hybrid (CodeT5 + Gemini {self.gemini_model})"
                 }
         else:
-            print("🤖 Using fine-tuned model...")
-            fixed = self._generate_finetuned(code, "fix_bug", max_length=512)
+            # Only fine-tuned model available
+            print("🤖 Using fine-tuned model only...")
             return {
-                "fixed_code": fixed,
-                "explanation": "Fixed using fine-tuned model",
+                "fixed_code": finetuned_analysis,
+                "explanation": "Fixed using fine-tuned CodeT5 model",
                 "method": "Fine-tuned CodeT5"
             }
     
     def optimize_code(self, code: str) -> Dict[str, str]:
-        """Optimize code"""
+        """Optimize code using hybrid approach - fine-tuned model + Gemini"""
+        # Step 1: Get optimization suggestions from fine-tuned model
+        print("🤖 Step 1: Getting optimization suggestions from fine-tuned model...")
+        finetuned_suggestions = self._generate_finetuned(code, "optimize", max_length=512)
+        
         if self.use_gemini:
-            print("✨ Using Gemini for optimization...")
+            # Step 2: Apply optimizations with Gemini
+            print("✨ Step 2: Applying optimizations with Gemini AI...")
             
-            prompt = f"""Optimize this Python code for better performance, readability, and best practices.
+            prompt = f"""Optimize this Python code using the initial suggestions provided.
 
-Code:
+Original Code:
 ```python
 {code}
 ```
+
+Optimization Suggestions (from fine-tuned CodeT5 model):
+{finetuned_suggestions}
 
 Provide your response in this EXACT format with PROFESSIONAL HEADINGS:
 
@@ -392,17 +407,14 @@ OPTIMIZED_CODE:
 ```
 
 IMPROVEMENTS:
-Write a professional explanation using proper section headings (NO bullet points, NO asterisks, NO numbered lists).
-
-Use this structure:
 ## Performance Optimizations
-Describe performance improvements in paragraph form, explaining time/space complexity changes.
+Describe performance improvements in paragraph form.
 
 ## Code Quality Improvements
-Describe readability and maintainability improvements in paragraph form.
+Describe readability improvements in paragraph form.
 
 ## Best Practices Applied
-Describe any design patterns or best practices implemented in paragraph form.
+Describe best practices in paragraph form.
 
 Response:"""
             
@@ -424,8 +436,8 @@ Response:"""
                 
                 return {
                     "optimized_code": opt_code,
-                    "suggestions": [improvements],
-                    "method": f"Google Gemini ({self.gemini_model})"
+                    "suggestions": [f"🤖 CodeT5 Suggestions:\n{finetuned_suggestions}\n\n✨ Gemini Improvements:\n{improvements}"],
+                    "method": f"Hybrid (CodeT5 + Gemini {self.gemini_model})"
                 }
             else:
                 if "```python" in result:
@@ -438,20 +450,27 @@ Response:"""
                 
                 return {
                     "optimized_code": opt_code,
-                    "suggestions": ["Code optimized"],
-                    "method": f"Google Gemini ({self.gemini_model})"
+                    "suggestions": [f"🤖 CodeT5: {finetuned_suggestions}\n\n✨ Optimized"],
+                    "method": f"Hybrid (CodeT5 + Gemini {self.gemini_model})"
                 }
         else:
+            # Only fine-tuned model available
+            print("🤖 Using fine-tuned model only...")
             return {
-                "optimized_code": "AI optimization unavailable.",
-                "suggestions": [],
-                "method": "N/A"
+                "optimized_code": finetuned_suggestions,
+                "suggestions": ["Optimized using fine-tuned CodeT5 model"],
+                "method": "Fine-tuned CodeT5"
             }
     
     def generate_tests(self, code: str, num_tests: int = 3) -> List[str]:
-        """Generate unit tests"""
+        """Generate unit tests using hybrid approach - fine-tuned model + Gemini"""
+        # Step 1: Get test outline from fine-tuned model
+        print("🤖 Step 1: Generating test outline from fine-tuned model...")
+        finetuned_tests = self._generate_finetuned(code, "generate_tests", max_length=512)
+        
         if self.use_gemini:
-            print("✨ Using Gemini for test generation...")
+            # Step 2: Generate comprehensive tests with Gemini
+            print("✨ Step 2: Generating comprehensive tests with Gemini AI...")
             
             prompt = f"""Generate comprehensive pytest unit tests for this Python code.
 
@@ -459,6 +478,9 @@ Code:
 ```python
 {code}
 ```
+
+Test Outline (from fine-tuned CodeT5 model):
+{finetuned_tests}
 
 Include:
 - Test normal/expected cases
@@ -479,6 +501,10 @@ Test code:"""
                 if len(parts) >= 2:
                     result = parts[1].strip()
             
+            # Add header showing hybrid approach
+            result = f"# Generated using Hybrid Approach (CodeT5 + Gemini {self.gemini_model})\n# CodeT5 Outline: {finetuned_tests[:100]}...\n\n{result}"
             return [result]
         else:
-            return ["AI test generation unavailable."]
+            # Only fine-tuned model available
+            print("🤖 Using fine-tuned model only...")
+            return [f"# Generated using Fine-tuned CodeT5\n\n{finetuned_tests}"]
