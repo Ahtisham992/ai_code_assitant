@@ -396,8 +396,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📧 Contact
 
 For questions or feedback, please reach out to:
-- Email: your.email@example.com
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: shamimuhammad77@gmail.com
+- GitHub: [@Ahtisham992](https://github.com/Ahtisham992)
 
 ---
 
